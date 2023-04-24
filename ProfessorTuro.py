@@ -1,12 +1,12 @@
 ## PROFESSOR TURO BOT
 
-import re, os, asyncio, random, string
+import re, os, asyncio, random, string, time
 from discord.ext import commands, tasks
 from pathlib import Path
 import json
 from json import loads
 
-version = 'v1.1'
+version = 'v1.2'
 
 ## Defining the server and bot token
 config = loads(Path("config.json").read_text())
@@ -19,6 +19,7 @@ spawns_3 = config["spawns_3"]
 spawns_4 = config["spawns_4"]
 spawns_5 = config["spawns_5"]
 test_p2 = config["test_p2"]
+timeout_secs = 6.0
 
 
 pokename = 874910942490677270
@@ -51,7 +52,15 @@ async def handle_spawn_message(channel_id, content):
         await channel.send(f'?lock <#{channel_id}>')
     elif 'Shiny Hunt Pings' in content and "@" in content:
         print(f'Shiny Hunt detected in {channel.name}!')
-        await channel.send('?shlock')
+
+        # wait for 5 seconds for someone else to send a message
+        try:
+            await client.wait_for('message', timeout=timeout_secs, check=lambda m: m.channel == channel and m.author != client.user)
+            print("Interrupted, not shiny locking!")
+        except asyncio.TimeoutError:
+            future_timestamp = int(time.time()) + 3600
+            await channel.send('?shlock',delete_after=timeout_secs)
+            await channel.send("ShLocked! Will be unlocked automatically <t:" + (f"{future_timestamp}") + ":R> (unless someone unlocks manually, of course!)")
 
 
 @client.event
