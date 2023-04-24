@@ -10,6 +10,3 @@ Turo will send the command ``?shlock`` if PokeName tags a shiny hunt. ``?shlock`
 ## Future ideas
 * Turo will post a timestamp of when the channel will be unlocked.
 * Cooldown of a shiny hunt ping so that online players don't have to unlock a channel straight away.
-
-## Known issues
-* Turo will shiny lock channels for AFK spawns
