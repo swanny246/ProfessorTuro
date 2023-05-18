@@ -19,7 +19,7 @@ spawns_3 = config["spawns_3"]
 spawns_4 = config["spawns_4"]
 spawns_5 = config["spawns_5"]
 test_p2 = config["test_p2"]
-timeout_secs = 6.0
+timeout_secs = 12.0
 
 pokename = 874910942490677270
 client = commands.Bot(command_prefix='&')
