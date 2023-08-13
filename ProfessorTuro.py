@@ -72,10 +72,11 @@ async def handle_spawn_message(channel_id, message):
                                       check=lambda m: m.channel == channel and m.author != client.user)
                 print("Interrupted, not shiny locking!")
             except asyncio.TimeoutError:
-                future_timestamp = int(time.time()) + 3600
-                await channel.send('?shlock', delete_after=timeout_secs)
-                await channel.send(
-                    f"ShLocked! Will be unlocked automatically <t:{future_timestamp}:R> (unless someone unlocks manually, of course!)")
+                #future_timestamp = int(time.time()) + 3600
+                #await channel.send('?shlock', delete_after=timeout_secs)
+                await shlock(message)
+                #await channel.send(
+                #    f"ShLocked! Will be unlocked automatically <t:{future_timestamp}:R> (unless someone unlocks manually, of course!)")
         else:
             print("All mentioned users are opted-out, skipping locking.")
             await channel.send("All mentioned users are opted-out, skipping locking!")
@@ -129,5 +130,37 @@ async def optout(ctx):
     else:
         await ctx.channel.send("You are not currently opted in.")
 
+@client.command()
+async def shlock(ctx):
+    channel = ctx.channel
+    print(channel)
+    everyone_role = ctx.guild.default_role
+    future_timestamp = int(time.time()) + 3600
+    try:
+        await channel.set_permissions(everyone_role, send_messages=False)
+        await channel.send(f"ShLocked! Will be unlocked automatically <t:{future_timestamp}:R> (unless someone unlocks manually, of course!)")
+        
+        await asyncio.sleep(3600)  # Wait for 60 minutes
+        
+        await channel.set_permissions(everyone_role, send_messages=True)
+        await ctx.send("Channel unlocked.")
+        
+    except Exception as e:
+        await ctx.send("An error occurred while locking the channel.")
+        print("Error locking the channel:", str(e))
+
+
+@client.command()
+async def shunlock(ctx):
+    channel = ctx.channel
+    everyone_role = ctx.guild.default_role
+    
+    try:
+        await channel.set_permissions(everyone_role, send_messages=True)
+        await ctx.send("Channel unlocked.")
+        
+    except Exception as e:
+        await ctx.send("An error occurred while unlocking the channel.")
+        print("Error unlocking the channel:", str(e))
 
 asyncio.run(client.run(f"{user_token}"))
