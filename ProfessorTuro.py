@@ -34,11 +34,17 @@ intervals = [3.0, 2.2, 2.4, 2.6, 2.8]
 @tasks.loop(seconds=random.choice(intervals))
 async def spam():
     channel = client.get_channel(int(spam_id))
-    await channel.send(''.join(random.sample(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], 7) * 5))
+    message = ''.join(random.sample(['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], 7) * 5)
+    try:
+        await channel.send(message)
+        print(f'Sent message ' + message)
+    except Exception as e:
+        print("Something went wrong while sending the message:", str(e))
 
 
 @spam.before_loop
 async def before_spam():
+    print(f'Awaiting until client is ready before spamming...')
     await client.wait_until_ready()
 
 
